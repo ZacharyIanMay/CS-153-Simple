@@ -12,6 +12,8 @@ import java.util.HashSet;
 import intermediate.*;
 import static frontend.Token.TokenType.*;
 import static intermediate.Node.NodeType.*;
+import static intermediate.Node.NodeType.AND;
+import static intermediate.Node.NodeType.MOD;
 
 public class Parser
 {
@@ -365,7 +367,7 @@ private Node parseAssignmentStatement()
         {
             Node opNode = currentToken.type == PLUS ? new Node(ADD)
             		    : currentToken.type == MINUS ? new Node(SUBTRACT)
-            		    : currentToken.type == OR ? new Node(OR)		
+            		    : currentToken.type == Token.TokenType.OR ? new Node(Node.NodeType.OR)
             		    :                          null;
             
             currentToken = scanner.nextToken();  // consume the operator
@@ -397,9 +399,9 @@ private Node parseAssignmentStatement()
         {
             Node opNode = currentToken.type == STAR ? new Node(MULTIPLY)
             		    : currentToken.type == SLASH ? new Node(DIVIDE)
-            		    : currentToken.type == DIV ? new Node(DIV)
-            		    : currentToken.type == MOD ? new Node(MOD)
-            		    : currentToken.type == AND ? new Node(AND)
+            		    : currentToken.type == Token.TokenType.DIV ? new Node(Node.NodeType.DIV)
+            		    : currentToken.type == Token.TokenType.MOD ? new Node(Node.NodeType.MOD)
+            		    : currentToken.type == Token.TokenType.AND ? new Node(Node.NodeType.AND)
             		    :                          null;
             
             currentToken = scanner.nextToken();  // consume the operator
