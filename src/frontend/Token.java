@@ -17,10 +17,13 @@ public class Token
         WRITELN, DIV, MOD, AND, OR, NOT, CONST,
         TYPE, VAR, PROCEDURE, FUNCTION, WHILE, DO,
         FOR, TO, DOWNTO, IF, THEN, ELSE, CASE, OF,
-        PERIOD, COLON, COLON_EQUALS, SEMICOLON,
+        PERIOD, COMMA, COLON, COLON_EQUALS, SEMICOLON,
         PLUS, MINUS, STAR, SLASH, LPAREN, RPAREN, 
-        EQUALS, LESS_THAN, LESS_THAN_EQUAL,
-        IDENTIFIER, INTEGER, REAL, STRING, CHARACTER, END_OF_FILE, ERROR
+        EQUALS, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL,
+        GREATER_THAN, GREATER_THAN_EQUAL, DOUB_PERIOD, 
+        APOST, LBRACKET, RBRACKET, CARET,
+        IDENTIFIER, INTEGER, REAL, CHARACTER, STRING, 
+        END_OF_FILE, ERROR
     }
     
     /**
@@ -190,7 +193,7 @@ public class Token
         // , <> <= > >= .. ' [ ] ^
         switch (firstChar)
         {
-            case '.' : token.type = TokenType.PERIOD;     break;
+        	case ',' : token.type = TokenType.COMMA;  	  break;
             case ';' : token.type = TokenType.SEMICOLON;  break;
             case '+' : token.type = TokenType.PLUS;       break;
             case '-' : token.type = TokenType.MINUS;      break;
@@ -199,6 +202,25 @@ public class Token
             case '=' : token.type = TokenType.EQUALS;     break;
             case '(' : token.type = TokenType.LPAREN;     break;
             case ')' : token.type = TokenType.RPAREN;     break;
+            case '\'' : token.type = TokenType.APOST;     break;
+            case '[' : token.type = TokenType.LBRACKET;   break;
+            case ']' : token.type = TokenType.RBRACKET;   break;
+            case '^' : token.type = TokenType.CARET;      break;
+            case '.' :
+            {
+            	char nextChar = source.nextChar();
+                if (nextChar == '.')
+                {
+                    token.text += '.';
+                    token.type = TokenType.DOUB_PERIOD;
+                }
+                else
+                {
+                    token.type = TokenType.PERIOD;
+                    return token;
+                }
+                break;
+            }
             case '<' :
             {
                 char nextChar = source.nextChar();
@@ -207,6 +229,11 @@ public class Token
                     token.text += '=';
                     token.type = TokenType.LESS_THAN_EQUAL;
                 }
+                if (nextChar == '>')
+                {
+                    token.text += '>';
+                    token.type = TokenType.NOT_EQUAL;
+                }
                 else
                 {
                     token.type = TokenType.LESS_THAN;
@@ -214,8 +241,21 @@ public class Token
                 }
                 break;
             }
-
-
+            case '>' :
+            {
+                char nextChar = source.nextChar();
+                if (nextChar == '=')
+                {
+                    token.text += '=';
+                    token.type = TokenType.GREATER_THAN_EQUAL;
+                }
+                else
+                {
+                    token.type = TokenType.GREATER_THAN;
+                    return token;
+                }
+                break;
+            }
             case ':' : 
             {
                 char nextChar = source.nextChar();
