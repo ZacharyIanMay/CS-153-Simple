@@ -30,10 +30,17 @@ public class Scanner
         
         // Skip blanks and other whitespace characters.
         while (Character.isWhitespace(ch)) ch = source.nextChar();
-        
-        if (Character.isLetter(ch))     return Token.word(ch, source);
+
+        if(ch == '{')
+        {
+            for(char cha = source.nextChar();cha != '}';ch = source.nextChar())
+            {
+                //do nothing, just skip the comment
+            }
+        }
+        if (Character.isLetter(ch)) return Token.word(ch, source);
         else if (Character.isDigit(ch)) return Token.number(ch, source);
-        else if (ch == '\'')            return Token.string(ch, source);
-        else                            return Token.specialSymbol(ch, source);
+        else if (ch == '\'') return Token.string(ch, source);
+        else return Token.specialSymbol(ch, source);
     }
 }
