@@ -15,7 +15,7 @@ public class Token
     {
         PROGRAM, BEGIN, END, REPEAT, UNTIL, WRITE,
         WRITELN, DIV, MOD, AND, OR, NOT, CONST,
-        TYPE, VAR, PROCEDURE, FUNCTION, WHILE, DO, CARAT,
+        TYPE, VAR, PROCEDURE, FUNCTION, WHILE, DO, CARAT, DIAMOND,
         FOR, TO, DOWNTO, IF, THEN, ELSE, CASE, OF, LBRACKET, RBRACKET,
         PERIOD, COLON, COLON_EQUALS, SEMICOLON, COMMA, APOSTRAPHE,
         PLUS, MINUS, STAR, SLASH, LPAREN, RPAREN, DOUBLE_PERIOD,
@@ -96,7 +96,6 @@ public class Token
         
         // Is it a reserved word or an identifier?
         token.type = reservedWords.get(token.text.toUpperCase());
-        //TODO: this needs more checking
         if (token.type == null) token.type = TokenType.IDENTIFIER;
 
         return token;
@@ -187,7 +186,6 @@ public class Token
         Token token = new Token(firstChar);
         token.lineNumber = source.lineNumber();
 
-        // , <> <= > >= .. ' [ ] ^
         switch (firstChar)
         {
             case ';' : token.type = TokenType.SEMICOLON;  break;
@@ -208,7 +206,7 @@ public class Token
                 char nextChar = source.nextChar();
                 if (nextChar == '.')
                 {
-                    token.text += '=';
+                    token.text += '.';
                     token.type = TokenType.DOUBLE_PERIOD;
                 }
                 else
@@ -223,8 +221,13 @@ public class Token
                 char nextChar = source.nextChar();
                 if (nextChar == '=')
                 {
-                    token.text += '.';
+                    token.text += '=';
                     token.type = TokenType.LESS_THAN_EQUAL;
+                }
+                else if(nextChar == '>')
+                {
+                    token.text += '>';
+                    token.type = TokenType.DIAMOND;
                 }
                 else
                 {
