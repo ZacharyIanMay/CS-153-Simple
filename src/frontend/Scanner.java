@@ -29,13 +29,13 @@ public class Scanner
         char ch = source.currentChar();
         
         // Skip blanks and other whitespace characters.
-        while (Character.isWhitespace(ch)) ch = source.nextChar();
-
-        if(ch == '{')
-        {
-            for(char cha = source.nextChar();cha != '}';ch = source.nextChar())
-            {
-                //do nothing, just skip the comment
+        while (Character.isWhitespace(ch)||ch == '{') {
+            if (Character.isWhitespace(ch)) ch = source.nextChar();
+            else if (ch == '{') {
+                for (ch = source.nextChar(); ch != '}'; ch = source.nextChar()) {
+                    //do nothing, just skip the comment
+                }
+                ch = source.nextChar();
             }
         }
         if (Character.isLetter(ch)) return Token.word(ch, source);
