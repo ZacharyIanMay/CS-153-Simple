@@ -15,15 +15,12 @@ public class Token
     {
         PROGRAM, BEGIN, END, REPEAT, UNTIL, WRITE,
         WRITELN, DIV, MOD, AND, OR, NOT, CONST,
-        TYPE, VAR, PROCEDURE, FUNCTION, WHILE, DO,
-        FOR, TO, DOWNTO, IF, THEN, ELSE, CASE, OF,
-        PERIOD, COMMA, COLON, COLON_EQUALS, SEMICOLON,
-        PLUS, MINUS, STAR, SLASH, LPAREN, RPAREN, 
-        EQUALS, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL,
-        GREATER_THAN, GREATER_THAN_EQUAL, DOUB_PERIOD, 
-        APOST, LBRACKET, RBRACKET, CARET, LCURLY, RCURLY,
-        IDENTIFIER, INTEGER, REAL, CHARACTER, STRING, 
-        END_OF_FILE, ERROR
+        TYPE, VAR, PROCEDURE, FUNCTION, WHILE, DO, CARAT,
+        FOR, TO, DOWNTO, IF, THEN, ELSE, CASE, OF, LBRACKET, RBRACKET,
+        PERIOD, COLON, COLON_EQUALS, SEMICOLON, COMMA, APOSTRAPHE,
+        PLUS, MINUS, STAR, SLASH, LPAREN, RPAREN, DOUBLE_PERIOD,
+        EQUALS, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN, GREATER_THAN_EQUAL,
+        IDENTIFIER, INTEGER, REAL, STRING, CHARACTER, END_OF_FILE, ERROR
     }
     
     /**
@@ -193,7 +190,6 @@ public class Token
         // , <> <= > >= .. ' [ ] ^
         switch (firstChar)
         {
-        	case ',' : token.type = TokenType.COMMA;  	  break;
             case ';' : token.type = TokenType.SEMICOLON;  break;
             case '+' : token.type = TokenType.PLUS;       break;
             case '-' : token.type = TokenType.MINUS;      break;
@@ -202,19 +198,18 @@ public class Token
             case '=' : token.type = TokenType.EQUALS;     break;
             case '(' : token.type = TokenType.LPAREN;     break;
             case ')' : token.type = TokenType.RPAREN;     break;
-            case '\'' : token.type = TokenType.APOST;     break;
-            case '[' : token.type = TokenType.LBRACKET;   break;
-            case ']' : token.type = TokenType.RBRACKET;   break;
-            case '^' : token.type = TokenType.CARET;      break;
-            case '{' : token.type = TokenType.LCURLY;     break;
-            case '}' : token.type = TokenType.RCURLY;     break;
+            case ',' : token.type = TokenType.COMMA;     break;
+            case '\'' : token.type = TokenType.APOSTRAPHE;     break;
+            case '[' : token.type = TokenType.LBRACKET;     break;
+            case ']' : token.type = TokenType.RBRACKET;     break;
+            case '^' : token.type = TokenType.CARAT;     break;
             case '.' :
             {
-            	char nextChar = source.nextChar();
+                char nextChar = source.nextChar();
                 if (nextChar == '.')
                 {
-                    token.text += '.';
-                    token.type = TokenType.DOUB_PERIOD;
+                    token.text += '=';
+                    token.type = TokenType.DOUBLE_PERIOD;
                 }
                 else
                 {
@@ -228,13 +223,8 @@ public class Token
                 char nextChar = source.nextChar();
                 if (nextChar == '=')
                 {
-                    token.text += '=';
+                    token.text += '.';
                     token.type = TokenType.LESS_THAN_EQUAL;
-                }
-                if (nextChar == '>')
-                {
-                    token.text += '>';
-                    token.type = TokenType.NOT_EQUAL;
                 }
                 else
                 {
