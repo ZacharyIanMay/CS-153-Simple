@@ -13,11 +13,14 @@ public class Token
 {
     public enum TokenType
     {
-        PROGRAM, BEGIN, END, REPEAT, UNTIL, WRITE, WRITELN, 
+        PROGRAM, BEGIN, END, REPEAT, UNTIL, WRITE,
+        WRITELN, DIV, MOD, AND, OR, NOT, CONST,
+        TYPE, VAR, PROCEDURE, FUNCTION, WHILE, DO,
+        FOR, TO, DOWNTO, IF, THEN, ELSE, CASE, OF,
         PERIOD, COLON, COLON_EQUALS, SEMICOLON,
         PLUS, MINUS, STAR, SLASH, LPAREN, RPAREN, 
         EQUALS, LESS_THAN,
-        IDENTIFIER, INTEGER, REAL, STRING, END_OF_FILE, ERROR
+        IDENTIFIER, INTEGER, REAL, STRING, CHARACTER, END_OF_FILE, ERROR
     }
     
     /**
@@ -35,6 +38,26 @@ public class Token
         reservedWords.put("UNTIL",   TokenType.UNTIL);
         reservedWords.put("WRITE",   TokenType.WRITE);
         reservedWords.put("WRITELN", TokenType.WRITELN);
+        reservedWords.put("DIV", TokenType.DIV);
+        reservedWords.put("MOD", TokenType.MOD);
+        reservedWords.put("AND", TokenType.AND);
+        reservedWords.put("OR", TokenType.OR);
+        reservedWords.put("NOT", TokenType.NOT);
+        reservedWords.put("CONST", TokenType.CONST);
+        reservedWords.put("TYPE", TokenType.TYPE);
+        reservedWords.put("VAR", TokenType.VAR);
+        reservedWords.put("PROCEDURE", TokenType.PROCEDURE);
+        reservedWords.put("FUNCTION", TokenType.FUNCTION);
+        reservedWords.put("WHILE", TokenType.WHILE);
+        reservedWords.put("DO", TokenType.DO);
+        reservedWords.put("FOR", TokenType.FOR);
+        reservedWords.put("TO", TokenType.TO);
+        reservedWords.put("DOWNTO", TokenType.DOWNTO);
+        reservedWords.put("IF", TokenType.IF);
+        reservedWords.put("THEN", TokenType.THEN);
+        reservedWords.put("ELSE", TokenType.ELSE);
+        reservedWords.put("CASE", TokenType.CASE);
+        reservedWords.put("OF", TokenType.OF);
     }
     
     public TokenType type;       // what type of token
@@ -73,6 +96,7 @@ public class Token
         
         // Is it a reserved word or an identifier?
         token.type = reservedWords.get(token.text.toUpperCase());
+        //TODO: this needs more checking
         if (token.type == null) token.type = TokenType.IDENTIFIER;
 
         return token;
@@ -163,6 +187,7 @@ public class Token
         Token token = new Token(firstChar);
         token.lineNumber = source.lineNumber();
 
+        // , <> <= > >= .. ' [ ] ^
         switch (firstChar)
         {
             case '.' : token.type = TokenType.PERIOD;     break;
@@ -172,10 +197,12 @@ public class Token
             case '*' : token.type = TokenType.STAR;       break;
             case '/' : token.type = TokenType.SLASH;      break;
             case '=' : token.type = TokenType.EQUALS;     break;
-            case '<' : token.type = TokenType.LESS_THAN;  break;
             case '(' : token.type = TokenType.LPAREN;     break;
             case ')' : token.type = TokenType.RPAREN;     break;
-            
+            // Need to update this to include both < and <=
+            case '<' : token.type = TokenType.LESS_THAN;  break;
+
+
             case ':' : 
             {
                 char nextChar = source.nextChar();
