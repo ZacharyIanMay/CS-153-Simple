@@ -21,7 +21,7 @@ public class Token
         PLUS, MINUS, STAR, SLASH, LPAREN, RPAREN, 
         EQUALS, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL,
         GREATER_THAN, GREATER_THAN_EQUAL, DOUB_PERIOD, 
-        APOST, LBRACKET, RBRACKET, CARET,
+        APOST, LBRACKET, RBRACKET, CARET, LCURLY, RCURLY,
         IDENTIFIER, INTEGER, REAL, CHARACTER, STRING, 
         END_OF_FILE, ERROR
     }
@@ -206,6 +206,8 @@ public class Token
             case '[' : token.type = TokenType.LBRACKET;   break;
             case ']' : token.type = TokenType.RBRACKET;   break;
             case '^' : token.type = TokenType.CARET;      break;
+            case '{' : token.type = TokenType.LCURLY;     break;
+            case '}' : token.type = TokenType.RCURLY;     break;
             case '.' :
             {
             	char nextChar = source.nextChar();

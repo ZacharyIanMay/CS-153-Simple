@@ -329,7 +329,11 @@ private Node parseAssignmentStatement()
         {
             Token.TokenType tokenType = currentToken.type;
             Node opNode = tokenType == EQUALS    ? new Node(EQ)
+            		    : tokenType == NOT_EQUAL ? new Node(NE)
                         : tokenType == LESS_THAN ? new Node(LT)
+                        : tokenType == LESS_THAN_EQUAL ? new Node(LTE)
+                        : tokenType == GREATER_THAN ? new Node(GT)
+                        : tokenType == GREATER_THAN_EQUAL ? new Node(GTE)
                         :                          null;
             
             currentToken = scanner.nextToken();  // consume relational operator
@@ -356,20 +360,25 @@ private Node parseAssignmentStatement()
         Node simpExprNode = parseTerm();
         
         // Keep parsing more terms as long as the current token
-        // is a + or - operator.
+        // is a + or - or OR operator.
         while (simpleExpressionOperators.contains(currentToken.type))
         {
             Node opNode = currentToken.type == PLUS ? new Node(ADD)
-                                                    : new Node(SUBTRACT);
+            		    : currentToken.type == MINUS ? new Node(SUBTRACT)
+            		    : currentToken.type == OR ? new Node(OR)		
+            		    :                          null;
             
             currentToken = scanner.nextToken();  // consume the operator
 
             // The add or subtract node adopts the first term node as its
             // first child and the next term node as its second child. 
             // Then it becomes the simple expression's root node.
-            opNode.adopt(simpExprNode);
-            opNode.adopt(parseTerm());
-            simpExprNode = opNode;
+            if (opNode != null)
+            {
+            	opNode.adopt(simpExprNode);
+            	opNode.adopt(parseTerm());
+            	simpExprNode = opNode;
+            }
         }
         
         return simpExprNode;
@@ -383,20 +392,27 @@ private Node parseAssignmentStatement()
         Node termNode = parseFactor();
         
         // Keep parsing more factor as long as the current token
-        // is a * or / operator.
+        // is a * or / or DIV or MOD or AND operator.
         while (termOperators.contains(currentToken.type))
         {
             Node opNode = currentToken.type == STAR ? new Node(MULTIPLY)
-                                                    : new Node(DIVIDE);
+            		    : currentToken.type == SLASH ? new Node(DIVIDE)
+            		    : currentToken.type == DIV ? new Node(DIV)
+            		    : currentToken.type == MOD ? new Node(MOD)
+            		    : currentToken.type == AND ? new Node(AND)
+            		    :                          null;
             
             currentToken = scanner.nextToken();  // consume the operator
 
             // The multiply or dive node adopts the first factor node as its
             // as its first child and the next factor node as its second child. 
             // Then it becomes the term's root node.
+            if (opNode != null)
+            {
             opNode.adopt(termNode);
             opNode.adopt(parseFactor());
             termNode = opNode;
+            }
         }
         
         return termNode;
