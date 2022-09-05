@@ -1,8 +1,12 @@
- * Scanner class for a simple interpreter.
+ /** Scanner class for a simple interpreter.
  * 
  * (c) 2020 by Ronald Mak
  * Department of Computer Science
  * San Jose State University
+ * 
+ * Additional work done by Team A: Jade Webb, Zachary May
+ * CS 153 Assignment #2
+ * 
  */
 package frontend;
 

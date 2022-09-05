@@ -4,6 +4,10 @@
  * (c) 2020 by Ronald Mak
  * Department of Computer Science
  * San Jose State University
+ * 
+ * Additional work done by Team A: Jade Webb, Zachary May
+ * CS 153 Assignment #2
+ * 
  */
 package frontend;
 
@@ -162,19 +166,17 @@ public class Token
         char ch = source.nextChar();
         char testString;
         boolean end = false;
-        int sourceLine1;
-        int sourceLine2;
+      
         while(ch != source.EOF && !end)
         {
-        	//System.out.println("char test: " + ch);
             if(ch == '\'')
             {
                 testString = source.nextChar();
-                if(testString == '\'')
+                if(testString == '\'')		//if next character is ' then keep it as part of the string
                 {
                 	token.text += ch;
-                	ch = source.nextChar();
-                } else if (testString == '\n' || testString == ' ') {
+                	ch = source.nextChar();	
+                } else if (testString == '\n' || testString == ' ') {	//if next character is newline or space, end the string
                 	end = true;
                 }
             } else {
@@ -185,9 +187,9 @@ public class Token
         if(ch == '\'') {
             token.text += '\'';  // append the closing '
             source.nextChar();   // and consume it
-            if (token.text.length() == 3) {
+            if (token.text.length() == 3) {		//if string is one letter, it is a char
             	token.type = TokenType.CHARACTER;
-            } else {
+            } else {							//else it is a string
             	token.type = TokenType.STRING;
             }
         }
