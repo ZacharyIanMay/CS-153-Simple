@@ -49,7 +49,7 @@ public class Simple
      */
     private static void testScanner(Source source)
     {
-        System.out.println("Tokens: test");
+        System.out.println("Tokens:");
         System.out.println();
         
         Scanner scanner = new Scanner(source);  // create the scanner

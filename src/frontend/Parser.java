@@ -331,11 +331,11 @@ private Node parseAssignmentStatement()
         {
             Token.TokenType tokenType = currentToken.type;
             Node opNode = tokenType == EQUALS    ? new Node(EQ)
-            		    : tokenType == NOT_EQUAL ? new Node(NE)
+            		    : tokenType == NOT_EQUALS ? new Node(NE)
                         : tokenType == LESS_THAN ? new Node(LT)
-                        : tokenType == LESS_THAN_EQUAL ? new Node(LTE)
+                        : tokenType == LESS_EQUALS ? new Node(LTE)
                         : tokenType == GREATER_THAN ? new Node(GT)
-                        : tokenType == GREATER_THAN_EQUAL ? new Node(GTE)
+                        : tokenType == GREATER_EQUALS ? new Node(GTE)
                         :                          null;
             
             currentToken = scanner.nextToken();  // consume relational operator

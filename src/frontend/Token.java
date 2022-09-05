@@ -14,12 +14,12 @@ public class Token
     public enum TokenType
     {
         PROGRAM, BEGIN, END, REPEAT, UNTIL, WRITE,
-        WRITELN, DIV, MOD, AND, OR, NOT, CONST, NOT_EQUAL,
-        TYPE, VAR, PROCEDURE, FUNCTION, WHILE, DO, CARAT, NOT_EQUAL,
+        WRITELN, DIV, MOD, AND, OR, NOT, CONST, NOT_EQUALS,
+        TYPE, VAR, PROCEDURE, FUNCTION, WHILE, DO, CARAT,
         FOR, TO, DOWNTO, IF, THEN, ELSE, CASE, OF, LBRACKET, RBRACKET,
         PERIOD, COLON, COLON_EQUALS, SEMICOLON, COMMA, APOSTRAPHE,
-        PLUS, MINUS, STAR, SLASH, LPAREN, RPAREN, DOUBLE_PERIOD,
-        EQUALS, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN, GREATER_THAN_EQUAL,
+        PLUS, MINUS, STAR, SLASH, LPAREN, RPAREN, DOT_DOT,
+        EQUALS, LESS_THAN, LESS_EQUALS, GREATER_THAN, GREATER_EQUALS,
         IDENTIFIER, INTEGER, REAL, STRING, CHARACTER, END_OF_FILE, ERROR
     }
     
@@ -91,7 +91,7 @@ public class Token
              Character.isLetterOrDigit(ch);
              ch = source.nextChar())
         {
-            token.text += ch;
+        	 token.text += ch;
         }
         
         // Is it a reserved word or an identifier?
@@ -160,28 +160,36 @@ public class Token
         // Loop to append the rest of the characters of the string,
         // up to but not including the closing quote.
         char ch = source.nextChar();
+        char testString;
         boolean end = false;
+        int sourceLine1;
+        int sourceLine2;
         while(ch != source.EOF && !end)
         {
-            token.text += ch;
+        	//System.out.println("char test: " + ch);
             if(ch == '\'')
             {
-                ch = source.nextChar();
-                if(ch == '\'')
+                testString = source.nextChar();
+                if(testString == '\'')
                 {
-                    token.text += ch;
+                	token.text += ch;
+                	ch = source.nextChar();
+                } else if (testString == '\n' || testString == ' ') {
+                	end = true;
                 }
-                else
-                {
-                    end = true;
-                }
+            } else {
+            	token.text += ch;
+            	ch = source.nextChar();
             }
-            ch = source.nextChar();
         }
-        if(source.currentChar() == '\'') {
+        if(ch == '\'') {
             token.text += '\'';  // append the closing '
             source.nextChar();   // and consume it
-            token.type = TokenType.STRING;
+            if (token.text.length() == 3) {
+            	token.type = TokenType.CHARACTER;
+            } else {
+            	token.type = TokenType.STRING;
+            }
         }
         else if(source.currentChar() == source.EOF)
         {
@@ -227,7 +235,7 @@ public class Token
                 if (nextChar == '.')
                 {
                     token.text += '.';
-                    token.type = TokenType.DOUBLE_PERIOD;
+                    token.type = TokenType.DOT_DOT;
                 }
                 else
                 {
@@ -242,12 +250,12 @@ public class Token
                 if (nextChar == '=')
                 {
                     token.text += '=';
-                    token.type = TokenType.LESS_THAN_EQUAL;
+                    token.type = TokenType.LESS_EQUALS;
                 }
                 else if(nextChar == '>')
                 {
                     token.text += '>';
-                    token.type = TokenType.NOT_EQUAL;
+                    token.type = TokenType.NOT_EQUALS;
                 }
                 else
                 {
@@ -262,7 +270,7 @@ public class Token
                 if (nextChar == '=')
                 {
                     token.text += '=';
-                    token.type = TokenType.GREATER_THAN_EQUAL;
+                    token.type = TokenType.GREATER_EQUALS;
                 }
                 else
                 {
