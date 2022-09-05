@@ -15,7 +15,7 @@ public class Token
     {
         PROGRAM, BEGIN, END, REPEAT, UNTIL, WRITE,
         WRITELN, DIV, MOD, AND, OR, NOT, CONST, NOT_EQUAL,
-        TYPE, VAR, PROCEDURE, FUNCTION, WHILE, DO, CARAT, DIAMOND,
+        TYPE, VAR, PROCEDURE, FUNCTION, WHILE, DO, CARAT, NOT_EQUAL,
         FOR, TO, DOWNTO, IF, THEN, ELSE, CASE, OF, LBRACKET, RBRACKET,
         PERIOD, COLON, COLON_EQUALS, SEMICOLON, COMMA, APOSTRAPHE,
         PLUS, MINUS, STAR, SLASH, LPAREN, RPAREN, DOUBLE_PERIOD,
@@ -208,19 +208,19 @@ public class Token
 
         switch (firstChar)
         {
-            case ';' : token.type = TokenType.SEMICOLON;  break;
-            case '+' : token.type = TokenType.PLUS;       break;
-            case '-' : token.type = TokenType.MINUS;      break;
-            case '*' : token.type = TokenType.STAR;       break;
-            case '/' : token.type = TokenType.SLASH;      break;
-            case '=' : token.type = TokenType.EQUALS;     break;
-            case '(' : token.type = TokenType.LPAREN;     break;
-            case ')' : token.type = TokenType.RPAREN;     break;
-            case ',' : token.type = TokenType.COMMA;     break;
-            case '\'' : token.type = TokenType.APOSTRAPHE;     break;
-            case '[' : token.type = TokenType.LBRACKET;     break;
-            case ']' : token.type = TokenType.RBRACKET;     break;
-            case '^' : token.type = TokenType.CARAT;     break;
+            case ';' : token.type = TokenType.SEMICOLON;   break;
+            case '+' : token.type = TokenType.PLUS;        break;
+            case '-' : token.type = TokenType.MINUS;       break;
+            case '*' : token.type = TokenType.STAR;        break;
+            case '/' : token.type = TokenType.SLASH;       break;
+            case '=' : token.type = TokenType.EQUALS;      break;
+            case '(' : token.type = TokenType.LPAREN;      break;
+            case ')' : token.type = TokenType.RPAREN;      break;
+            case ',' : token.type = TokenType.COMMA;       break;
+            case '\'' : token.type = TokenType.APOSTRAPHE; break;
+            case '[' : token.type = TokenType.LBRACKET;    break;
+            case ']' : token.type = TokenType.RBRACKET;    break;
+            case '^' : token.type = TokenType.CARAT;       break;
             case '.' :
             {
                 char nextChar = source.nextChar();
@@ -247,7 +247,7 @@ public class Token
                 else if(nextChar == '>')
                 {
                     token.text += '>';
-                    token.type = TokenType.DIAMOND;
+                    token.type = TokenType.NOT_EQUAL;
                 }
                 else
                 {

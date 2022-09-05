@@ -28,8 +28,22 @@ public class Scanner
     {
         char ch = source.currentChar();
         
+        if (Character.isWhitespace(ch)) ch = source.nextChar();
+        
+        boolean flag = false;
+        
+        if (ch == '{') {
+        	while (!flag) {
+        		if (ch != '}') {
+        			ch = source.nextChar();
+        		} else {
+        			flag = true;
+        		}
+        	}
+        }
+        
         // Skip blanks and other whitespace characters.
-        while (Character.isWhitespace(ch)||ch == '{') {
+       /* while (Character.isWhitespace(ch)||ch == '{') {
             if (Character.isWhitespace(ch)) ch = source.nextChar();
             else if (ch == '{') {
                 for (ch = source.nextChar(); ch != '}'; ch = source.nextChar()) {
@@ -37,7 +51,7 @@ public class Scanner
                 }
                 ch = source.nextChar();
             }
-        }
+        }*/
         if (Character.isLetter(ch)) return Token.word(ch, source);
         else if (Character.isDigit(ch)) return Token.number(ch, source);
         else if (ch == '\'') return Token.string(ch, source);
