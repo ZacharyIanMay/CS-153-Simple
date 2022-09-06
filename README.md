@@ -3,4 +3,4 @@ A repository for the first team project of CS 153.
 
 Assignment #2
 
-Part 1 of Team A : Jade Webb, Zachary May
+Team A : Jade Webb, Zachary May, Yinuo Tang, Ajita Srivastava
