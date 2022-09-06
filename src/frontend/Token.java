@@ -176,7 +176,7 @@ public class Token
                 {
                 	token.text += ch;
                 	ch = source.nextChar();	
-                } else if (testString == '\n' || testString == ' ') {	//if next character is newline or space, end the string
+                } else {	//else, end the string
                 	end = true;
                 }
             } else {
