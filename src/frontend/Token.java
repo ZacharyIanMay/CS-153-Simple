@@ -5,7 +5,7 @@
  * Department of Computer Science
  * San Jose State University
  * 
- * Additional work done by Team A: Jade Webb, Zachary May
+ * Additional work done by Team A: Jade Webb, Zachary May, Yinuo Tang, Ajita Srivastava
  * CS 153 Assignment #2
  * 
  */
