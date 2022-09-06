@@ -185,8 +185,7 @@ public class Token
             }
         }
         if(ch == '\'') {
-            token.text += '\'';  // append the closing '
-            source.nextChar();   // and consume it
+            token.text += '\'';  // append the closing ' which has already been consumed
             if (token.text.length() == 3) {		//if string is one letter, it is a char
             	token.type = TokenType.CHARACTER;
             } else {							//else it is a string
