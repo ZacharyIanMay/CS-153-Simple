@@ -538,6 +538,7 @@ private Node parseAssignmentStatement()
         // This is the first node that needs to be adopted
         Node testNode = new Node(TEST);
         testNode.lineNumber = currentToken.lineNumber;
+        loopNode.adopt(testNode);
         if(toFlag == true)
         {
             Node GTNode = new Node(GT);
