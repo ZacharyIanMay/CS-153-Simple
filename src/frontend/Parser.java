@@ -125,6 +125,7 @@ public class Parser
             case REPEAT :     stmtNode = parseRepeatStatement();     break;
             case WRITE :      stmtNode = parseWriteStatement();      break;
             case WRITELN :    stmtNode = parseWritelnStatement();    break;
+            case FOR :    stmtNode = parseForStatement();    break;
             case SEMICOLON :  stmtNode = null; break;  // empty statement
             
             default : syntaxError("Unexpected token");
@@ -497,6 +498,102 @@ private Node parseAssignmentStatement()
         
         currentToken = scanner.nextToken();  // consume the string        
         return stringNode;
+    }
+
+    private Node parseForStatement()
+    {
+        // The current token should now be FOR
+
+        Node compoundNode = new Node(COMPOUND);
+        compoundNode.lineNumber = currentToken.lineNumber;
+        // Consumes the FOR token
+        currentToken = scanner.nextToken();
+
+        Node assignmentNode = parseAssignmentStatement();
+        compoundNode.adopt(assignmentNode);
+
+        Node loopNode = new Node(LOOP);
+        loopNode.lineNumber = currentToken.lineNumber;
+        compoundNode.adopt(loopNode);
+
+        //identifier name for loop
+        Node varName = assignmentNode.children.get(0);
+        boolean toFlag = false;
+
+        if(currentToken.type == TO)
+        {
+            toFlag = true;
+        }
+        else if(currentToken.type == DOWNTO)
+        {
+            toFlag = false;
+        }
+        else
+        {
+            syntaxError("expecting TO or DOWNTO");
+        }
+        //Consumes the TO or DOWNTO token
+        currentToken = scanner.nextToken();
+
+        // This is the first node that needs to be adopted
+        Node testNode = new Node(TEST);
+        testNode.lineNumber = currentToken.lineNumber;
+        if(toFlag == true)
+        {
+            Node GTNode = new Node(GT);
+            testNode.adopt(GTNode);
+            GTNode.adopt(varName);
+            GTNode.adopt(parseExpression());
+        }
+        else
+        {
+            Node LTNode = new Node(LT);
+            testNode.adopt(LTNode);
+            LTNode.adopt(varName);
+            LTNode.adopt(parseExpression());
+        }
+
+        if(currentToken.type != DO)
+        {
+            syntaxError("expecting DO");
+        }
+        // Consumes the DO token
+        currentToken = scanner.nextToken();
+
+        // This is the second node that needs to be adopted
+        if(currentToken.type == BEGIN)
+        {
+            //Handle a compound statement
+            loopNode.adopt(parseCompoundStatement());
+        }
+        else
+        {
+            //Handle a single statement
+            loopNode.adopt(parseStatement());
+        }
+
+        //This is the third node that needs to be adopted
+        Node assignNode = new Node(ASSIGN);
+        loopNode.adopt(assignNode);
+        assignNode.adopt(varName);
+        Node oneNode = new Node(INTEGER_CONSTANT);
+        oneNode.value = (long) 1;
+        if(toFlag == true)
+        {
+            Node addNode = new Node(ADD);
+            assignNode.adopt(addNode);
+            addNode.adopt(varName);
+            addNode.adopt(oneNode);
+        }
+        else
+        {
+            Node subNode = new Node(SUBTRACT);
+            assignNode.adopt(subNode);
+            subNode.adopt(varName);
+            subNode.adopt(oneNode);
+        }
+
+        return compoundNode;
     }
 
     private void syntaxError(String message)
