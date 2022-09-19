@@ -5,8 +5,8 @@
  * Department of Computer Science
  * San Jose State University
  * 
- * Additional work done by Team A: Jade Webb, Zachary May
- * CS 153 Assignment #2
+ * Additional work done by Team A: Jade Webb, Zachary May, Yinuo Tang, Ajita Srivastava
+ * CS 153 Assignment #3
  * 
  */
 package frontend;
@@ -125,7 +125,8 @@ public class Parser
             case REPEAT :     stmtNode = parseRepeatStatement();     break;
             case WRITE :      stmtNode = parseWriteStatement();      break;
             case WRITELN :    stmtNode = parseWritelnStatement();    break;
-            case FOR :    stmtNode = parseForStatement();    break;
+            case FOR :        stmtNode = parseForStatement();    break;
+            case CASE :       stmtNode = parseCaseStatement();    break;
             case SEMICOLON :  stmtNode = null; break;  // empty statement
             
             default : syntaxError("Unexpected token");
@@ -427,12 +428,12 @@ private Node parseAssignmentStatement()
     
     private Node parseFactor()
     {   
-        // The current token should now be an identifier or a number or (
+        // The current token should now be an identifier or a number or ( or -
         
         if      (currentToken.type == IDENTIFIER) return parseVariable();
         else if (currentToken.type == INTEGER)    return parseIntegerConstant();
         else if (currentToken.type == REAL)       return parseRealConstant();
-        
+        else if (currentToken.type == MINUS)	  return parseNegativeConstant();
         else if (currentToken.type == LPAREN)
         {
             currentToken = scanner.nextToken();  // consume (
@@ -498,6 +499,30 @@ private Node parseAssignmentStatement()
         
         currentToken = scanner.nextToken();  // consume the string        
         return stringNode;
+    }
+    
+    private Node parseNegativeConstant() {
+    	
+    	// The current token should now be a -
+    	
+    	currentToken = scanner.nextToken();  // consume the -  
+    	
+    	if (currentToken.type == INTEGER) 
+    	{
+    		Node integerNode = new Node(INTEGER_CONSTANT);
+            integerNode.value = (Long) currentToken.value * (-1);
+            
+            currentToken = scanner.nextToken();  // consume the number        
+            return integerNode;
+    	}
+        else
+        {
+        	Node realNode = new Node(REAL_CONSTANT);
+            realNode.value = (Long) currentToken.value * (-1);
+            
+            currentToken = scanner.nextToken();  // consume the number        
+            return realNode;
+        }
     }
 
     private Node parseForStatement()
@@ -595,6 +620,129 @@ private Node parseAssignmentStatement()
         }
 
         return compoundNode;
+    }
+    
+    private Node parseConstantList() {
+    	Node constantsNode = new Node(SELECT_CONSTANTS);
+        constantsNode.lineNumber = currentToken.lineNumber;
+    	boolean flag = false;
+    	while (!flag) {
+    		//Consume identifier constant
+    		if (currentToken.type == IDENTIFIER) 
+    		{
+    			constantsNode.adopt(parseVariable());
+    		} 
+    		//Consume negative constant
+    		else if (currentToken.type == MINUS) 
+    		{
+    			constantsNode.adopt(parseNegativeConstant());
+    		} 
+    		//Consume real constant
+    		else if (currentToken.type == REAL)
+    		{
+    			constantsNode.adopt(parseRealConstant());
+    		} 
+    		//Consume integer constant
+    		else if (currentToken.type == INTEGER) 
+    		{
+    			constantsNode.adopt(parseIntegerConstant());
+    		} 
+    		//Consume string constant
+    		else if (currentToken.type == STRING) 
+    		{
+    			constantsNode.adopt(parseStringConstant());
+    		} 
+    		else {
+    			syntaxError("expecting constant");
+    		}
+    		//Consume comma if there is one
+    		if (currentToken.type == COMMA) 
+    		{
+    			currentToken = scanner.nextToken();
+    		} 
+    		//End the constant list
+    		else 
+    		{
+    			flag = true;
+    		}
+    	}
+    	return constantsNode;
+    }
+    
+    private Node parseBranch() 
+    {
+    	// The current token should now be a constant list
+
+        Node branchNode = new Node(SELECT_BRANCH);
+        branchNode.lineNumber = currentToken.lineNumber;
+        
+        // Consumes the constant list
+        if ((currentToken.type == IDENTIFIER) || 
+    			(currentToken.type == INTEGER) ||
+    			(currentToken.type == REAL) ||
+    			(currentToken.type == STRING) ||
+        	    (currentToken.type == MINUS))
+    	{
+        	branchNode.adopt(parseConstantList());
+    	} 
+        else 
+    	{
+    		syntaxError("expecting constant(s)");
+    	}
+        if (currentToken.type == COLON) 
+		{
+			currentToken = scanner.nextToken();
+		} 
+		else 
+		{
+			syntaxError("expecting :");
+		}
+        if (currentToken.type == IDENTIFIER) 
+        {
+        	branchNode.adopt(parseAssignmentStatement());
+        } 
+        else if (currentToken.type == BEGIN) 
+        {
+        	branchNode.adopt(parseCompoundStatement());
+        }
+        if (currentToken.type == SEMICOLON) 
+        {
+        	currentToken = scanner.nextToken();
+        } 
+        return branchNode;
+    }
+    
+    private Node parseCaseStatement()
+    {
+        // The current token should now be CASE
+
+        Node selectNode = new Node(SELECT);
+        selectNode.lineNumber = currentToken.lineNumber;
+        // Consumes the CASE token
+        currentToken = scanner.nextToken();
+
+        Node expressionNode = parseExpression();
+        selectNode.adopt(expressionNode);
+        
+        if(currentToken.type != OF)
+        {
+            syntaxError("expecting OF");
+        }
+        // Consumes the OF token
+        currentToken = scanner.nextToken();
+        
+        boolean flag = false;
+        while (!flag) {
+        	selectNode.adopt(parseBranch());
+        	
+        	if(currentToken.type == END)
+            {
+            	//Consumes the END token
+        		flag = true;
+            	currentToken = scanner.nextToken();
+            } 
+        }
+        return selectNode;
     }
 
     private void syntaxError(String message)
