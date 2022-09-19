@@ -1,6 +1,6 @@
 # CS-153-Simple
-A repository for the first team project of CS 153.
+A repository for the second team project of CS 153.
 
-Assignment #2
+Assignment #3
 
 Team A : Jade Webb, Zachary May, Yinuo Tang, Ajita Srivastava
