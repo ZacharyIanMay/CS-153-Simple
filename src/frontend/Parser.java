@@ -104,6 +104,10 @@ public class Parser
         
         relationalOperators.add(EQUALS);
         relationalOperators.add(LESS_THAN);
+        relationalOperators.add(LESS_EQUALS);
+        relationalOperators.add(NOT_EQUALS);
+        relationalOperators.add(GREATER_THAN);
+        relationalOperators.add(GREATER_EQUALS);
         
         simpleExpressionOperators.add(PLUS);
         simpleExpressionOperators.add(MINUS);
@@ -126,6 +130,8 @@ public class Parser
             case WRITE :      stmtNode = parseWriteStatement();      break;
             case WRITELN :    stmtNode = parseWritelnStatement();    break;
             case FOR :    stmtNode = parseForStatement();    break;
+
+            case WHILE :      stmtNode = parseWhileStatement();      break;
             case SEMICOLON :  stmtNode = null; break;  // empty statement
             
             default : syntaxError("Unexpected token");
@@ -233,6 +239,36 @@ private Node parseAssignmentStatement()
         }
         else syntaxError("Expecting UNTIL");
         
+        return loopNode;
+    }
+
+    //while
+    private Node parseWhileStatement(){
+        //current token should be while
+        Node loopNode = new Node(LOOP);
+        loopNode.lineNumber = currentToken.lineNumber;
+        currentToken = scanner.nextToken(); //consume While
+
+        //test node
+        Node testNode = new Node(TEST);
+        testNode.lineNumber = currentToken.lineNumber;
+        loopNode.adopt(testNode);
+        //not node, test adopt not
+        Node notNode = new Node(Node.NodeType.NOT);
+        notNode.lineNumber = currentToken.lineNumber;
+        testNode.adopt(notNode);
+        //consume expression
+        notNode.adopt(parseExpression());
+
+
+
+        if(currentToken.type == DO){
+            currentToken = scanner.nextToken();//consume DO
+
+            loopNode.adopt(parseStatement());
+        }
+
+        else syntaxError("Expecting DO");
         return loopNode;
     }
     
