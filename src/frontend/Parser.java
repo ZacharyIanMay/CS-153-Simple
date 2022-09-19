@@ -125,8 +125,9 @@ public class Parser
             case REPEAT :     stmtNode = parseRepeatStatement();     break;
             case WRITE :      stmtNode = parseWriteStatement();      break;
             case WRITELN :    stmtNode = parseWritelnStatement();    break;
-            case FOR :    stmtNode = parseForStatement();    break;
-            case SEMICOLON :  stmtNode = null; break;  // empty statement
+            case IF :		  stmtNode = parseIfStatement();		 break;
+            case FOR :    	  stmtNode = parseForStatement(); 	     break;
+            case SEMICOLON :  stmtNode = null;        				 break;  // empty statement
             
             default : syntaxError("Unexpected token");
         }
@@ -498,6 +499,39 @@ private Node parseAssignmentStatement()
         
         currentToken = scanner.nextToken();  // consume the string        
         return stringNode;
+    }
+    
+    private Node parseIfStatement()
+    {
+    	// The current token should now be IF
+        Node ifNode = new Node(IFNODE);
+        ifNode.lineNumber = currentToken.lineNumber;
+        
+        currentToken = scanner.nextToken();
+        
+        Node testNode = new Node(TEST);
+        testNode.lineNumber = currentToken.lineNumber;
+        
+        ifNode.adopt(testNode);
+        testNode.adopt(parseExpression());
+        
+        // The current token should now be THEN
+        if (currentToken.type == THEN) {
+        	currentToken = scanner.nextToken();
+	        Node thenAssignmentNode = parseAssignmentStatement();
+	        ifNode.adopt(thenAssignmentNode);
+        }
+        else 							
+        	syntaxError("expecting THEN");
+        
+        // The current token should now be ELSE
+        if (currentToken.type == ELSE) {
+        	currentToken = scanner.nextToken();
+        	Node elseAssignmentNode = parseAssignmentStatement();
+        	ifNode.adopt(elseAssignmentNode);
+        }
+        
+        return ifNode;
     }
 
     private Node parseForStatement()
