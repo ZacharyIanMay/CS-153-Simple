@@ -125,13 +125,10 @@ public class Parser
             case REPEAT :     stmtNode = parseRepeatStatement();     break;
             case WRITE :      stmtNode = parseWriteStatement();      break;
             case WRITELN :    stmtNode = parseWritelnStatement();    break;
-            case IF :		  stmtNode = parseIfStatement();     				 break;  // empty statement
-            case FOR :        stmtNode = parseForStatement();    break;
-            case CASE :       stmtNode = parseCaseStatement();    break;
-            case SEMICOLON :  stmtNode = null; break;  // empty statement
-            case FOR :        stmtNode = parseForStatement();    break;
-            case CASE :       stmtNode = parseCaseStatement();    break;
-            case SEMICOLON :  stmtNode = null; break;  // empty statement
+            case IF :		  stmtNode = parseIfStatement();     	 break;  // empty statement
+            case FOR :        stmtNode = parseForStatement();        break;
+            case CASE :       stmtNode = parseCaseStatement();       break;
+            case SEMICOLON :  stmtNode = null;                       break;  // empty statement
             
             default : syntaxError("Unexpected token");
         }
@@ -536,30 +533,6 @@ private Node parseAssignmentStatement()
         }
         
         return ifNode;
-    }
-    
-    private Node parseNegativeConstant() {
-    	
-    	// The current token should now be a -
-    	
-    	currentToken = scanner.nextToken();  // consume the -  
-    	
-    	if (currentToken.type == INTEGER) 
-    	{
-    		Node integerNode = new Node(INTEGER_CONSTANT);
-            integerNode.value = (Long) currentToken.value * (-1);
-            
-            currentToken = scanner.nextToken();  // consume the number        
-            return integerNode;
-    	}
-        else
-        {
-        	Node realNode = new Node(REAL_CONSTANT);
-            realNode.value = (Long) currentToken.value * (-1);
-            
-            currentToken = scanner.nextToken();  // consume the number        
-            return realNode;
-        }
     }
     
     private Node parseNegativeConstant() {
