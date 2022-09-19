@@ -704,6 +704,10 @@ private Node parseAssignmentStatement()
         else if (currentToken.type == BEGIN) 
         {
         	branchNode.adopt(parseCompoundStatement());
+        } 
+        else 
+        {
+        	branchNode.adopt(parseStatement());
         }
         if (currentToken.type == SEMICOLON) 
         {
