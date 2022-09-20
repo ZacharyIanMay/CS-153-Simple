@@ -20,11 +20,15 @@ public class Executor
     
     private static HashSet<Node.NodeType> singletons;
     private static HashSet<Node.NodeType> relationals;
+    private static HashSet<Node.NodeType> arithmetics;
+    private static HashSet<Node.NodeType> logicals;
     
     static
     {
         singletons  = new HashSet<Node.NodeType>();
         relationals = new HashSet<Node.NodeType>();
+        arithmetics = new HashSet<Node.NodeType>();
+        logicals = new HashSet<Node.NodeType>();
         
         singletons.add(VARIABLE);
         singletons.add(INTEGER_CONSTANT);
@@ -32,12 +36,21 @@ public class Executor
         singletons.add(STRING_CONSTANT);
         
         relationals.add(EQ);
-        relationals.add(LT);
-        relationals.add(GT);
-        relationals.add(LTE);
-        relationals.add(GTE);
         relationals.add(NE);
-
+        relationals.add(LT);
+        relationals.add(LTE);
+        relationals.add(GT);
+        relationals.add(GTE);
+        
+        arithmetics.add(ADD);
+        arithmetics.add(SUBTRACT);
+        arithmetics.add(MULTIPLY);
+        arithmetics.add(DIVIDE);
+        
+        logicals.add(AND);
+        logicals.add(OR);
+        logicals.add(NOT);
+        
     }
     
     public Executor(Symtab symtab)
@@ -51,14 +64,13 @@ public class Executor
         {
             case PROGRAM :  return visitProgram(node);
             
-            case COMPOUND :
-            case ASSIGN:
-            case LOOP :
+            case COMPOUND : 
+            case ASSIGN :   
+            case LOOP : 
             case WRITE :
             case WRITELN :  return visitStatement(node);
             
             case TEST:      return visitTest(node);
-
             
             default :       return visitExpression(node);
         }
@@ -203,57 +215,86 @@ public class Executor
             }
         }
         
-        // Binary expressions.
-        double value1 = (Double) visit(expressionNode.children.get(0));
-
-        double value2 = (Double) visit(expressionNode.children.get(1));
-
-        
         // Relational expressions.
         if (relationals.contains(expressionNode.type))
         {
+        	 // Binary expressions.
+            double value1 = (Double) visit(expressionNode.children.get(0));
+            double value2 = (Double) visit(expressionNode.children.get(1));
+            
             boolean value = false;
             
             switch (expressionNode.type)
             {
                 case EQ : value = value1 == value2; break;
+                case NE : value = value1 != value2; break;
                 case LT : value = value1 <  value2; break;
-                case GT : value = value1 > value2; break;
-                case GTE: value = value1 >= value2; break;
                 case LTE : value = value1 <= value2; break;
-                case NE: value = value1 != value2; break;
-
+                case GT : value = value1 > value2; break;
+                case GTE : value = value1 >= value2; break;
+                
                 default : break;
             }
             
             return value;
         }
-           
-        double value = 0.0;
         
         // Arithmetic expressions.
-        switch (expressionNode.type)
+        if (arithmetics.contains(expressionNode.type))
         {
-            case ADD :      value = value1 + value2; break;
-            case SUBTRACT : value = value1 - value2; break;
-            case MULTIPLY : value = value1 * value2; break;
-                
-            case DIVIDE :
-            {
-                if (value2 != 0.0) value = value1/value2;
-                else
-                {
-                    runtimeError(expressionNode, "Division by zero");
-                    return 0.0;
-                }
-                
-                break;
-            }
+        	 // Binary expressions.
+            double value1 = (Double) visit(expressionNode.children.get(0));
+            double value2 = (Double) visit(expressionNode.children.get(1));
             
-            default : break;
-        }
+        	double value = 0.0;
         
-        return Double.valueOf(value);
+        	switch (expressionNode.type)
+        	{
+        		case ADD :      value = value1 + value2; break;
+        		case SUBTRACT : value = value1 - value2; break;
+        		case MULTIPLY : value = value1 * value2; break;
+                
+        		case DIVIDE :
+        		{
+        			if (value2 != 0.0) value = value1/value2;
+        			else
+        			{
+        				runtimeError(expressionNode, "Division by zero");
+        				return 0.0;
+        			}
+        			
+        			break;
+        		}
+        		
+        		default : break;
+        	}
+        	
+        	return value;
+        }
+
+        // Logical expressions.
+        if (logicals.contains(expressionNode.type))
+        {
+        	// Binary expressions.
+            boolean value1 = (Boolean) visit(expressionNode.children.get(0));
+            
+        	boolean value = false;
+        
+        	switch (expressionNode.type)
+        	{
+        		case AND :      boolean value2AND = (Boolean) visit(expressionNode.children.get(1));
+        						value = value1 && value2AND; break;
+        		case OR : 		boolean value2OR = (Boolean) visit(expressionNode.children.get(1));
+        						value = value1 || value2OR; break;
+        		case NOT : 		value = !value1; break;
+        		
+        		default : break;
+        	}
+        	
+        	return value;
+        }
+
+       return null;
     }
     
     private Object visitVariable(Node variableNode)
@@ -289,3 +330,4 @@ public class Executor
         System.exit(-2);
     }
 }
+
