@@ -136,7 +136,9 @@ public class Parser
 
             case WHILE :      stmtNode = parseWhileStatement();      break;
             case IF :		  stmtNode = parseIfStatement();     	 break;  // empty statement
+            case FOR :        stmtNode = parseForStatement();        break;
             case CASE :       stmtNode = parseCaseStatement();       break;
+            case SEMICOLON :  stmtNode = null;                       break;  // empty statement
 
             default : syntaxError("Unexpected token");
         }
@@ -247,7 +249,8 @@ private Node parseAssignmentStatement()
     }
 
     //while
-    private Node parseWhileStatement(){
+    private Node parseWhileStatement()
+    {
         //current token should be while
         Node loopNode = new Node(LOOP);
         loopNode.lineNumber = currentToken.lineNumber;
@@ -257,20 +260,18 @@ private Node parseAssignmentStatement()
         Node testNode = new Node(TEST);
         testNode.lineNumber = currentToken.lineNumber;
         loopNode.adopt(testNode);
-
+        
         //not node, test adopt not
         Node notNode = new Node(Node.NodeType.NOT);
         notNode.lineNumber = currentToken.lineNumber;
         testNode.adopt(notNode);
-
+        
         //consume expression
         notNode.adopt(parseExpression());
 
-
-
-        if(currentToken.type == DO){
-            currentToken = scanner.nextToken();//consume DO
-
+        if(currentToken.type == DO)
+        {
+            currentToken = scanner.nextToken(); //consume DO
             loopNode.adopt(parseStatement());
         }
 
@@ -512,23 +513,37 @@ private Node parseAssignmentStatement()
     private Node parseIntegerConstant()
     {
         // The current token should now be a number.
+    	
+    	if (currentToken.type == MINUS) 
+    	{	    		
+    		return parseNegativeConstant();
+    	} 
+    	else 
+    	{
+    		Node integerNode = new Node(INTEGER_CONSTANT);
+    		integerNode.value = currentToken.value;
         
-        Node integerNode = new Node(INTEGER_CONSTANT);
-        integerNode.value = currentToken.value;
-        
-        currentToken = scanner.nextToken();  // consume the number        
-        return integerNode;
+    		currentToken = scanner.nextToken();  // consume the number        
+    		return integerNode;
+    	}
     }
 
     private Node parseRealConstant()
     {
         // The current token should now be a number.
         
-        Node realNode = new Node(REAL_CONSTANT);
-        realNode.value = currentToken.value;
+    	if (currentToken.type == MINUS) 
+    	{	    		
+    		return parseNegativeConstant();
+    	} 
+    	else 
+    	{
+    		Node realNode = new Node(REAL_CONSTANT);
+    		realNode.value = currentToken.value;
         
-        currentToken = scanner.nextToken();  // consume the number        
-        return realNode;
+    		currentToken = scanner.nextToken();  // consume the number        
+    		return realNode;
+    	}
     }
     
     private Node parseStringConstant()
@@ -588,6 +603,7 @@ private Node parseAssignmentStatement()
         return ifNode;
     }
 
+    //Handles parsing of negative numbers
     private Node parseNegativeConstant() {
 
     	// The current token should now be a -
