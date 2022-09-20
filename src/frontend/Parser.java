@@ -134,9 +134,7 @@ public class Parser
             case WHILE :      stmtNode = parseWhileStatement();      break;
             case SEMICOLON :  stmtNode = null; break;  // empty statement
             case IF :		  stmtNode = parseIfStatement();     	 break;  // empty statement
-            case FOR :        stmtNode = parseForStatement();        break;
             case CASE :       stmtNode = parseCaseStatement();       break;
-            case SEMICOLON :  stmtNode = null;                       break;  // empty statement
 
             default : syntaxError("Unexpected token");
         }
@@ -257,10 +255,12 @@ private Node parseAssignmentStatement()
         Node testNode = new Node(TEST);
         testNode.lineNumber = currentToken.lineNumber;
         loopNode.adopt(testNode);
+
         //not node, test adopt not
         Node notNode = new Node(Node.NodeType.NOT);
         notNode.lineNumber = currentToken.lineNumber;
         testNode.adopt(notNode);
+
         //consume expression
         notNode.adopt(parseExpression());
 
