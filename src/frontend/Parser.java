@@ -111,9 +111,13 @@ public class Parser
 
         simpleExpressionOperators.add(PLUS);
         simpleExpressionOperators.add(MINUS);
+        simpleExpressionOperators.add(Token.TokenType.OR);
         
         termOperators.add(STAR);
         termOperators.add(SLASH);
+        termOperators.add(Token.TokenType.DIV);
+        termOperators.add(Token.TokenType.AND);
+        
     }
     
     private Node parseStatement()
@@ -129,10 +133,8 @@ public class Parser
             case REPEAT :     stmtNode = parseRepeatStatement();     break;
             case WRITE :      stmtNode = parseWriteStatement();      break;
             case WRITELN :    stmtNode = parseWritelnStatement();    break;
-            case FOR :    stmtNode = parseForStatement();    break;
 
             case WHILE :      stmtNode = parseWhileStatement();      break;
-            case SEMICOLON :  stmtNode = null; break;  // empty statement
             case IF :		  stmtNode = parseIfStatement();     	 break;  // empty statement
             case FOR :        stmtNode = parseForStatement();        break;
             case CASE :       stmtNode = parseCaseStatement();       break;
@@ -547,18 +549,31 @@ private Node parseAssignmentStatement()
         ifNode.lineNumber = currentToken.lineNumber;
 
         currentToken = scanner.nextToken();
-
+       
         Node testNode = new Node(TEST);
         testNode.lineNumber = currentToken.lineNumber;
 
         ifNode.adopt(testNode);
-        testNode.adopt(parseExpression());
+        
+        //If there is a NOT token
+        if (currentToken.type == Token.TokenType.NOT) {
+        	Node notNode = new Node(Node.NodeType.NOT);
+        	notNode.lineNumber = currentToken.lineNumber;
+        	
+        	testNode.adopt(notNode);
+        	currentToken = scanner.nextToken(); // consume not
+        	notNode.adopt(parseExpression());
+        }
+        else {
+        	testNode.adopt(parseExpression());
+        }
+        
 
         // The current token should now be THEN
         if (currentToken.type == THEN) {
         	currentToken = scanner.nextToken();
-	        Node thenAssignmentNode = parseAssignmentStatement();
-	        ifNode.adopt(thenAssignmentNode);
+//	        Node thenBlockNode = parseStatement();
+	        ifNode.adopt(parseStatement());
         }
         else
         	syntaxError("expecting THEN");
@@ -566,8 +581,8 @@ private Node parseAssignmentStatement()
         // The current token should now be ELSE
         if (currentToken.type == ELSE) {
         	currentToken = scanner.nextToken();
-        	Node elseAssignmentNode = parseAssignmentStatement();
-        	ifNode.adopt(elseAssignmentNode);
+        	Node elseBlockNode = parseStatement();
+        	ifNode.adopt(elseBlockNode);
         }
 
         return ifNode;
