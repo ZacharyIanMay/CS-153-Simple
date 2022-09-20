@@ -4,6 +4,10 @@
  * (c) 2020 by Ronald Mak
  * Department of Computer Science
  * San Jose State University
+ *  
+ * Additional work done by Team A: Jade Webb, Zachary May, Yinuo Tang, Ajita Srivastava
+ * CS 153 Assignment #3
+ * 
  */
 package backend;
 
@@ -72,6 +76,9 @@ public class Executor
             
             case TEST:      return visitTest(node);
             
+            case IFNODE:    return visitIfNode(node);
+            case SELECT:    return visitCaseNode(node);
+            
             default :       return visitExpression(node);
         }
     }
@@ -93,6 +100,8 @@ public class Executor
             case LOOP :      return visitLoop(statementNode);
             case WRITE :     return visitWrite(statementNode);
             case WRITELN :   return visitWriteln(statementNode);
+            case IFNODE:     return visitIfNode(statementNode);
+            case SELECT:     return visitCaseNode(statementNode);
             
             default :        return null;
         }
@@ -137,6 +146,40 @@ public class Executor
         } while (!b);
         
         return null;
+    }
+    
+    private Object visitIfNode(Node ifNode)
+    {        
+        if ((Boolean) visit(ifNode.children.get(0))) 
+        {
+        	visit(ifNode.children.get(1));
+        } else if (ifNode.children.size() > 2) 
+        {
+        	visit(ifNode.children.get(2));
+        }
+        return null;
+    }
+    
+    private Object visitCaseNode(Node caseNode)
+    {   
+    	
+    	Double value = (Double) visit(caseNode.children.get(0));
+    	
+    	for (int i = 1; i < caseNode.children.size(); i++)
+        {
+            Node branch = caseNode.children.get(i);
+            
+            Node constants = branch.children.get(0);
+            
+            for (int j = 0; j < constants.children.size(); j++) 
+            {
+            	if (((Double) visit(constants.children.get(j))).equals(value)) 
+                {
+                	return visit(branch.children.get(1));
+                }
+            }
+        }
+    	return null;
     }
     
     private Object visitTest(Node testNode)
@@ -330,4 +373,3 @@ public class Executor
         System.exit(-2);
     }
 }
-
