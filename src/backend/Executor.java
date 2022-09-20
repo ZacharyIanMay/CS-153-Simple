@@ -34,6 +34,10 @@ public class Executor
         relationals.add(EQ);
         relationals.add(LT);
         relationals.add(GT);
+        relationals.add(LTE);
+        relationals.add(GTE);
+        relationals.add(NE);
+
     }
     
     public Executor(Symtab symtab)
@@ -47,13 +51,14 @@ public class Executor
         {
             case PROGRAM :  return visitProgram(node);
             
-            case COMPOUND : 
-            case ASSIGN :   
-            case LOOP : 
+            case COMPOUND :
+            case ASSIGN:
+            case LOOP :
             case WRITE :
             case WRITELN :  return visitStatement(node);
             
             case TEST:      return visitTest(node);
+
             
             default :       return visitExpression(node);
         }
@@ -200,7 +205,9 @@ public class Executor
         
         // Binary expressions.
         double value1 = (Double) visit(expressionNode.children.get(0));
+
         double value2 = (Double) visit(expressionNode.children.get(1));
+
         
         // Relational expressions.
         if (relationals.contains(expressionNode.type))
@@ -212,7 +219,10 @@ public class Executor
                 case EQ : value = value1 == value2; break;
                 case LT : value = value1 <  value2; break;
                 case GT : value = value1 > value2; break;
-                
+                case GTE: value = value1 >= value2; break;
+                case LTE : value = value1 <= value2; break;
+                case NE: value = value1 != value2; break;
+
                 default : break;
             }
             
