@@ -50,6 +50,7 @@ public class Executor
         arithmetics.add(SUBTRACT);
         arithmetics.add(MULTIPLY);
         arithmetics.add(DIVIDE);
+        arithmetics.add(DIV);
         
         logicals.add(AND);
         logicals.add(OR);
@@ -67,8 +68,8 @@ public class Executor
         switch (node.type)
         {
             case PROGRAM :  return visitProgram(node);
-            
-            case COMPOUND : 
+
+            case COMPOUND :
             case ASSIGN :   
             case LOOP : 
             case WRITE :
@@ -102,7 +103,6 @@ public class Executor
             case WRITELN :   return visitWriteln(statementNode);
             case IFNODE:     return visitIfNode(statementNode);
             case SELECT:     return visitCaseNode(statementNode);
-            
             default :        return null;
         }
     }
@@ -308,6 +308,17 @@ public class Executor
         			
         			break;
         		}
+                case DIV:
+                {
+                    if (value2 != 0.0) value = Math.floor(value1/value2);
+                    else
+                    {
+                        runtimeError(expressionNode, "Division by zero");
+                        return 0.0;
+                    }
+
+                    break;
+                }
         		
         		default : break;
         	}
